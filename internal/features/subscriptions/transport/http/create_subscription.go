@@ -25,15 +25,7 @@ type CreateSubscriptionRequestDTOWithoutDate struct {
 	UserID      uuid.UUID `json:"user_id" validate:"required"`
 }
 
-type CreateSubscriptionResponseDTO struct {
-	ID          int                              `json:"id"`
-	Version     int                              `json:"version"`
-	ServiceName string                           `json:"service_name"`
-	Price       int                              `json:"price"`
-	UserID      uuid.UUID                        `json:"user_id"`
-	StartDate   core_subcription_date.YearMonth  `json:"start_date"`
-	FinishDate  *core_subcription_date.YearMonth `json:"finish_date"`
-}
+type CreateSubscriptionResponseDTO SubscriptionResponseDTO
 
 func NewCreateSubscriptionRequestDTO(
 	serviceName string,
@@ -98,23 +90,14 @@ func (h *SubscribtionsHTTPHandler) Create(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	response := dtoFromDomain(subscriptionDomain)
+	dateStart := core_subcription_date.ParseDateStartToString(subscriptionDomain.DateStart)
+	dateFinish := core_subcription_date.ParseDateFinishToString(subscriptionDomain.DateFinish)
+
+	response := CreateSubscriptionResponseDTO(subscriptionDtoFromDomain(subscriptionDomain, dateStart, dateFinish))
 
 	responseHandler.ToJSONRsponse(response, http.StatusCreated)
 }
 
 func domainFromDTO(dto CreateSubscriptionRequestDTO) domain.Subscription {
 	return domain.NewSubscriptionCreate(dto.ServiceName, dto.Price, dto.UserID, dto.StartDate, dto.FinishDate)
-}
-
-func dtoFromDomain(subscription domain.Subscription) CreateSubscriptionResponseDTO {
-	return CreateSubscriptionResponseDTO{
-		ID:          subscription.ID,
-		Version:     subscription.Version,
-		ServiceName: subscription.ServiceName,
-		Price:       subscription.Price,
-		UserID:      subscription.UserID,
-		StartDate:   subscription.DateStart,
-		FinishDate:  subscription.DateFinish,
-	}
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	core_subcription_date "github.com/Vlad-6894/test_task/internal/core/date/subsription"
+	"github.com/Vlad-6894/test_task/internal/core/domain"
 	"github.com/google/uuid"
 )
 
@@ -40,4 +41,24 @@ func NewSubscriptionsCreateRequestModel(
 		DateStart:   time.Date(dateStart.Year, dateStart.Month, 1, 0, 0, 0, 0, time.UTC),
 		DateFinish:  &finishDate,
 	}
+}
+
+func subscriptionDomansFromModels(subscriptionModels []SubscriptionsModel) []domain.Subscription {
+	subscriptionDomains := make([]domain.Subscription, len(subscriptionModels))
+
+	for i, subscription := range subscriptionModels {
+		startDate := core_subcription_date.GetStartDateFromModel(subscription.DateStart)
+		finishDate := core_subcription_date.GetFinishDateFromModel(subscription.DateFinish)
+
+		subscriptionDomains[i] = domain.NewSubscription(
+			subscription.ID,
+			subscription.Version,
+			subscription.ServiceName,
+			subscription.Price,
+			subscription.UserID,
+			startDate,
+			finishDate,
+		)
+	}
+	return subscriptionDomains
 }

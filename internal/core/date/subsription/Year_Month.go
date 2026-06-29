@@ -47,7 +47,7 @@ func parseDateFromJson(date any) (YearMonth, error) {
 		month int
 	)
 
-	if _, err := fmt.Sscanf(dateString, "%d-%d", &year, &month); err != nil {
+	if _, err := fmt.Sscanf(dateString, "%d-%d", &month, &year); err != nil {
 		return YearMonth{}, fmt.Errorf("Fail to parce start date: %w", core_errors.ErrInvalidArgument)
 	}
 
@@ -90,4 +90,14 @@ func GetFinishDateFromModel(date *time.Time) *YearMonth {
 		Year:  year,
 		Month: yearMonht,
 	}
+}
+
+func ParseDateStartToString(yearMonth YearMonth) string {
+	date := fmt.Sprintf("%02d-%d", int(yearMonth.Month), yearMonth.Year)
+	return date
+}
+
+func ParseDateFinishToString(yearMonth *YearMonth) *string {
+	date := fmt.Sprintf("%02d-%d", int(yearMonth.Month), yearMonth.Year)
+	return &date
 }
