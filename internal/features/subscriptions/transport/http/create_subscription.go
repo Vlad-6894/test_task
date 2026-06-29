@@ -1,34 +1,120 @@
 package subscriptions_transport_http
 
 import (
-	"encoding/json"
 	"net/http"
-	"time"
 
+	core_subcription_date "github.com/Vlad-6894/test_task/internal/core/date/subsription"
+	"github.com/Vlad-6894/test_task/internal/core/domain"
+	core_logger "github.com/Vlad-6894/test_task/internal/core/logger"
+	core_http_request "github.com/Vlad-6894/test_task/internal/core/transport/http/request"
+	core_http_response "github.com/Vlad-6894/test_task/internal/core/transport/http/response"
 	"github.com/google/uuid"
 )
 
 type CreateSubscriptionRequestDTO struct {
-	ServiceName string     `json:"service_name"`
-	Price       int        `json:"price"`
-	UserID      uuid.UUID  `json:"user_id"`
-	StartDate   time.Time  `json:"start_date"`
-	FinishDate  *time.Time `json:"finish_date"`
+	ServiceName string                           `json:"service_name" validate:"required"`
+	Price       int                              `json:"price" validate:"required"`
+	UserID      uuid.UUID                        `json:"user_id" validate:"required"`
+	StartDate   core_subcription_date.YearMonth  `json:"start_date" validate:"required"`
+	FinishDate  *core_subcription_date.YearMonth `json:"finish_date"`
+}
+
+type CreateSubscriptionRequestDTOWithoutDate struct {
+	ServiceName string    `json:"service_name" validate:"required"`
+	Price       int       `json:"price" validate:"required"`
+	UserID      uuid.UUID `json:"user_id" validate:"required"`
 }
 
 type CreateSubscriptionResponseDTO struct {
-	ID          string     `json:"id"`
-	Version     int        `json:"version"`
-	ServiceName string     `json:"service_name"`
-	Price       int        `json:"price"`
-	UserID      uuid.UUID  `json:"user_id"`
-	StartDate   time.Time  `json:"start_date"`
-	FinishDate  *time.Time `json:"finish_date"`
+	ID          int                              `json:"id"`
+	Version     int                              `json:"version"`
+	ServiceName string                           `json:"service_name"`
+	Price       int                              `json:"price"`
+	UserID      uuid.UUID                        `json:"user_id"`
+	StartDate   core_subcription_date.YearMonth  `json:"start_date"`
+	FinishDate  *core_subcription_date.YearMonth `json:"finish_date"`
 }
 
-func (h *UsersHTTPHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var request CreateSubscriptionRequestDTO
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+func NewCreateSubscriptionRequestDTO(
+	serviceName string,
+	price int,
+	userID uuid.UUID,
+	startDate core_subcription_date.YearMonth,
+	finishDate *core_subcription_date.YearMonth,
+) CreateSubscriptionRequestDTO {
+	return CreateSubscriptionRequestDTO{
+		ServiceName: serviceName,
+		Price:       price,
+		UserID:      userID,
+		StartDate:   startDate,
+		FinishDate:  finishDate,
+	}
+}
 
+func (h *SubscribtionsHTTPHandler) Create(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	log := core_logger.FromContext(ctx)
+	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
+
+	log.Info("Create Subscription handler start")
+
+	var request CreateSubscriptionRequestDTOWithoutDate
+	var requestMap map[string]any
+
+	if err := core_http_request.DecodeAndValidateRequest(r, &requestMap); err != nil {
+		responseHandler.ErrorResponse(err, "failed decode http request!")
+		return
+	}
+
+	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
+		responseHandler.ErrorResponse(err, "failed decode http request!")
+		return
+	}
+
+	startDate, err := core_subcription_date.ParseStartDateFromJson(requestMap)
+	if err != nil {
+		responseHandler.ErrorResponse(err, "failed get start date")
+		return
+	}
+
+	finishDate, err := core_subcription_date.ParseFinishDateFromJson(requestMap)
+	if err != nil {
+		responseHandler.ErrorResponse(err, "failed get start date")
+		return
+	}
+
+	requestDto := NewCreateSubscriptionRequestDTO(
+		request.ServiceName,
+		request.Price,
+		request.UserID,
+		startDate,
+		finishDate,
+	)
+
+	subscriptionDomain := domainFromDTO(requestDto)
+	subscriptionDomain, err = h.subscriptionService.CreateSubscription(ctx, subscriptionDomain)
+	if err != nil {
+		responseHandler.ErrorResponse(err, "Failed to create")
+		return
+	}
+
+	response := dtoFromDomain(subscriptionDomain)
+
+	responseHandler.ToJSONRsponse(response, http.StatusCreated)
+}
+
+func domainFromDTO(dto CreateSubscriptionRequestDTO) domain.Subscription {
+	return domain.NewSubscriptionCreate(dto.ServiceName, dto.Price, dto.UserID, dto.StartDate, dto.FinishDate)
+}
+
+func dtoFromDomain(subscription domain.Subscription) CreateSubscriptionResponseDTO {
+	return CreateSubscriptionResponseDTO{
+		ID:          subscription.ID,
+		Version:     subscription.Version,
+		ServiceName: subscription.ServiceName,
+		Price:       subscription.Price,
+		UserID:      subscription.UserID,
+		StartDate:   subscription.DateStart,
+		FinishDate:  subscription.DateFinish,
 	}
 }

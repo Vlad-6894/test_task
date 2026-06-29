@@ -1,14 +1,33 @@
 package subscriptions_transport_http
 
-type UsersHTTPHandler struct {
-	usersService UsersService
+import (
+	"context"
+	"net/http"
+
+	"github.com/Vlad-6894/test_task/internal/core/domain"
+	core_http_server "github.com/Vlad-6894/test_task/internal/core/transport/http/server"
+)
+
+type SubscribtionsHTTPHandler struct {
+	subscriptionService SubscriptionsService
 }
 
-type UsersService interface {
+type SubscriptionsService interface {
+	CreateSubscription(ctx context.Context, subscription domain.Subscription) (domain.Subscription, error)
 }
 
-func NewUsersHTTPHandler(usersService UsersService) *UsersHTTPHandler {
-	return &UsersHTTPHandler{
-		usersService: usersService,
+func NewSubscriptionsHTTPHandler(subscriptionService SubscriptionsService) *SubscribtionsHTTPHandler {
+	return &SubscribtionsHTTPHandler{
+		subscriptionService: subscriptionService,
+	}
+}
+
+func (h *SubscribtionsHTTPHandler) Routes() []core_http_server.Route {
+	return []core_http_server.Route{
+		{
+			Method:  http.MethodPost,
+			Path:    "/subscription",
+			Handler: h.Create,
+		},
 	}
 }

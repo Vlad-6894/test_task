@@ -7,8 +7,8 @@ import (
 )
 
 type LoggerConfig struct {
-	Level  string `envcoding:"LEVEL" required:"true"`
-	Folder string `envcoding:"FOLDER" required:"true"`
+	Level  string `envconfig:"LEVEL" required:"true"`
+	Folder string `envconfig:"FOLDER" required:"true"`
 }
 
 func NewLoggerConfig() (LoggerConfig, error) {
