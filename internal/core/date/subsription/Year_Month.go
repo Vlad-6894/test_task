@@ -12,12 +12,7 @@ type YearMonth struct {
 	Month time.Month
 }
 
-func ParseStartDateFromJson(m map[string]any) (YearMonth, error) {
-	date, ok := m["start_date"]
-	if !ok {
-		err := fmt.Errorf("Error get start_date: %w", core_errors.ErrNotFound)
-		return YearMonth{}, err
-	}
+func ParseStartDateFromJson(date string) (YearMonth, error) {
 
 	yearMonth, err := parseDateFromJson(date)
 	if err != nil {
@@ -26,28 +21,22 @@ func ParseStartDateFromJson(m map[string]any) (YearMonth, error) {
 	return yearMonth, nil
 }
 
-func ParseFinishDateFromJson(m map[string]any) (*YearMonth, error) {
-	date, ok := m["finish_date"]
-	if !ok {
-		return nil, nil
-	}
-	yearMonth, err := parseDateFromJson(date)
+func ParseFinishDateFromJson(date *string) (*YearMonth, error) {
+	yearMonth, err := parseDateFromJson(*date)
 	if err != nil {
 		return nil, fmt.Errorf("Error parce start date! %w", err)
 	}
 	return &yearMonth, nil
 }
 
-func parseDateFromJson(date any) (YearMonth, error) {
-
-	dateString := fmt.Sprintf("%v", date)
+func parseDateFromJson(date string) (YearMonth, error) {
 
 	var (
 		year  int
 		month int
 	)
 
-	if _, err := fmt.Sscanf(dateString, "%d-%d", &month, &year); err != nil {
+	if _, err := fmt.Sscanf(date, "%d-%d", &month, &year); err != nil {
 		return YearMonth{}, fmt.Errorf("Fail to parce start date: %w", core_errors.ErrInvalidArgument)
 	}
 

@@ -12,36 +12,14 @@ import (
 )
 
 type CreateSubscriptionRequestDTO struct {
-	ServiceName string                           `json:"service_name" validate:"required"`
-	Price       int                              `json:"price" validate:"required"`
-	UserID      uuid.UUID                        `json:"user_id" validate:"required"`
-	StartDate   core_subcription_date.YearMonth  `json:"start_date" validate:"required"`
-	FinishDate  *core_subcription_date.YearMonth `json:"finish_date"`
-}
-
-type CreateSubscriptionRequestDTOWithoutDate struct {
 	ServiceName string    `json:"service_name" validate:"required"`
 	Price       int       `json:"price" validate:"required"`
 	UserID      uuid.UUID `json:"user_id" validate:"required"`
+	StartDate   string    `json:"start_date" validate:"required"`
+	FinishDate  *string   `json:"finish_date"`
 }
 
 type CreateSubscriptionResponseDTO SubscriptionResponseDTO
-
-func NewCreateSubscriptionRequestDTO(
-	serviceName string,
-	price int,
-	userID uuid.UUID,
-	startDate core_subcription_date.YearMonth,
-	finishDate *core_subcription_date.YearMonth,
-) CreateSubscriptionRequestDTO {
-	return CreateSubscriptionRequestDTO{
-		ServiceName: serviceName,
-		Price:       price,
-		UserID:      userID,
-		StartDate:   startDate,
-		FinishDate:  finishDate,
-	}
-}
 
 func (h *SubscribtionsHTTPHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -50,40 +28,26 @@ func (h *SubscribtionsHTTPHandler) Create(w http.ResponseWriter, r *http.Request
 
 	log.Info("Create Subscription handler start")
 
-	var request CreateSubscriptionRequestDTOWithoutDate
-	var requestMap map[string]any
-
-	if err := core_http_request.DecodeAndValidateRequest(r, &requestMap); err != nil {
-		responseHandler.ErrorResponse(err, "failed decode http request!")
-		return
-	}
+	var request CreateSubscriptionRequestDTO
 
 	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
 		responseHandler.ErrorResponse(err, "failed decode http request!")
 		return
 	}
 
-	startDate, err := core_subcription_date.ParseStartDateFromJson(requestMap)
+	startDate, err := core_subcription_date.ParseStartDateFromJson(request.StartDate)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed get start date")
 		return
 	}
 
-	finishDate, err := core_subcription_date.ParseFinishDateFromJson(requestMap)
+	finishDate, err := core_subcription_date.ParseFinishDateFromJson(request.FinishDate)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed get start date")
 		return
 	}
 
-	requestDto := NewCreateSubscriptionRequestDTO(
-		request.ServiceName,
-		request.Price,
-		request.UserID,
-		startDate,
-		finishDate,
-	)
-
-	subscriptionDomain := domainFromDTO(requestDto)
+	subscriptionDomain := domainFromDTO(request, startDate, finishDate)
 	subscriptionDomain, err = h.subscriptionService.CreateSubscription(ctx, subscriptionDomain)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "Failed to create")
@@ -98,6 +62,10 @@ func (h *SubscribtionsHTTPHandler) Create(w http.ResponseWriter, r *http.Request
 	responseHandler.ToJSONRsponse(response, http.StatusCreated)
 }
 
-func domainFromDTO(dto CreateSubscriptionRequestDTO) domain.Subscription {
-	return domain.NewSubscriptionCreate(dto.ServiceName, dto.Price, dto.UserID, dto.StartDate, dto.FinishDate)
+func domainFromDTO(
+	dto CreateSubscriptionRequestDTO,
+	startDate core_subcription_date.YearMonth,
+	finishDate *core_subcription_date.YearMonth,
+) domain.Subscription {
+	return domain.NewSubscriptionCreate(dto.ServiceName, dto.Price, dto.UserID, startDate, finishDate)
 }
