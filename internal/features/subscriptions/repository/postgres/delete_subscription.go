@@ -25,7 +25,7 @@ func (r *SubscriptionRepository) DeleteSubscription(
 	}
 
 	if cmndTag.RowsAffected() == 0 {
-		return fmt.Errorf("subscription with id=%d: %w", core_errors.ErrNotFound)
+		return fmt.Errorf("subscription with id=%d: %w", id, core_errors.ErrNotFound)
 	}
 
 	return nil

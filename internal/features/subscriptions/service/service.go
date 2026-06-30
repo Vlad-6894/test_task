@@ -31,6 +31,12 @@ type SubscriptionRepository interface {
 		ctx context.Context,
 		id int,
 	) error
+
+	PatchSubscription(
+		ctx context.Context,
+		id int,
+		subscription domain.Subscription,
+	) (domain.Subscription, error)
 }
 
 func NewSubscriptionService(subscriptinsRepository SubscriptionRepository) *SubscriptionService {

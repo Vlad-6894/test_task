@@ -67,3 +67,58 @@ func (s Subscription) Validate() error {
 
 	return nil
 }
+
+type SubscriptionPatch struct {
+	Price      Nullable[int]
+	StartDate  Nullable[string]
+	FinishDate Nullable[string]
+}
+
+func (p *SubscriptionPatch) Validate() error {
+	if p.Price.Set && p.Price.Value == nil {
+		return fmt.Errorf("Price can not be patched to NULL: %w", core_errors.ErrInvalidArgument)
+	}
+	if p.StartDate.Set && p.StartDate.Value == nil {
+		return fmt.Errorf("Start_date can not be patched to NULL: %w", core_errors.ErrInvalidArgument)
+	}
+
+	return nil
+}
+
+func (s *Subscription) ApplyPatch(patch SubscriptionPatch) error {
+	if err := patch.Validate(); err != nil {
+		return fmt.Errorf("validate patch error: %w", err)
+	}
+
+	tmp := *s
+
+	if patch.Price.Set {
+		tmp.Price = *patch.Price.Value
+	}
+
+	if patch.StartDate.Set {
+		startDate, err := core_subcription_date.ParseStartDateFromJson(*patch.StartDate.Value)
+		if err != nil {
+			return fmt.Errorf("parse startDate error: %w", err)
+		}
+
+		tmp.DateStart = startDate
+	}
+
+	if patch.FinishDate.Set {
+		finishDate, err := core_subcription_date.ParseFinishDateFromJson(patch.FinishDate.Value)
+		if err != nil {
+			return fmt.Errorf("parse finishDate error: %w", err)
+		}
+
+		tmp.DateFinish = finishDate
+	}
+
+	if err := tmp.Validate(); err != nil {
+		return fmt.Errorf("validate patched subscription error: %w", err)
+	}
+
+	*s = tmp
+
+	return nil
+}
