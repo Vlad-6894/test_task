@@ -12,7 +12,7 @@ env-down:
 postgres-cleanup:
 	@read -p "Очистить pg_data? Опасность утери данных. [y/N]: " choice; \
 	if [ "$$choice" = "y" ] || [ "$$choice" = "Y" ]; then \
-		docker compose down test-task-postgres && \
+		docker compose down test-task-postgres port-forwarder && \
 		sudo rm -rf out/pg_data && \
 		echo "Очищено"; \
 	else \
@@ -41,7 +41,7 @@ migrate-action:
 		echo "Нет параметра action"; \
 		exit 1; \
 	fi;
-	docker compose run --rm postgres-migrate \
+	@docker compose run --rm postgres-migrate \
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@test-task-postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		"$(action)"
@@ -51,3 +51,9 @@ start-port-forward:
 
 close-port-forward:
 	@docker compose down port-forwarder
+
+run-application:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=test-task-postgres && \
+	go mod tidy && \
+	go run cmd/main.go

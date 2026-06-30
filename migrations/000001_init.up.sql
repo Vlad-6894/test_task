@@ -7,5 +7,7 @@ CREATE TABLE test.subscriptions (
     price BIGINT NOT NULL,
     user_id UUID NOT NULL,
     start_date DATE NOT NULL,
-    finish_date DATE
+    finish_date DATE,
+
+    CHECK(finish_date>start_date)
 );
