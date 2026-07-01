@@ -13,11 +13,21 @@ postgres-cleanup:
 	@read -p "Очистить pg_data? Опасность утери данных. [y/N]: " choice; \
 	if [ "$$choice" = "y" ] || [ "$$choice" = "Y" ]; then \
 		docker compose down test-task-postgres port-forwarder && \
-		sudo rm -rf out/pg_data && \
+		sudo rm -rf ${PROJECT_ROOT}/out/pg_data && \
 		echo "Очищено"; \
 	else \
 		echo "Операция отменена"; \
 	fi
+
+logs-cleanup:
+	@read -p "Очистить все логи? Опасность утери важных логов!. [y/N]" choice; \
+	if [ "$$choice" = "y" ] || [ "$$choice" = "Y" ]; then \
+		sudo rm -rf ${PROJECT_ROOT}/out/logs && \
+		echo "Очищено"; \
+	else \
+		echo "Операция отменена"; \
+	fi
+
 
 create-migrate:
 	@if [ -z "$(seq)" ]; then \
@@ -57,3 +67,12 @@ run-application:
 	export POSTGRES_HOST=test-task-postgres && \
 	go mod tidy && \
 	go run cmd/main.go
+
+deploy-golang-app:
+	@docker compose up -d --build test-task-golang-app
+
+undeploy-golang-app:
+	@docker compose down test-task-golang-app
+
+ps:
+	@docker compose ps
