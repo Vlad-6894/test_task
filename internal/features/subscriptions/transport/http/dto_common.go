@@ -7,13 +7,13 @@ import (
 )
 
 type SubscriptionResponseDTO struct {
-	ID          int       `json:"id"`
-	Version     int       `json:"version"`
-	ServiceName string    `json:"service_name"`
-	Price       int       `json:"price"`
-	UserID      uuid.UUID `json:"user_id"`
-	StartDate   string    `json:"start_date"`
-	FinishDate  *string   `json:"finish_date"`
+	ID          int       `json:"id"              example:"1"`
+	Version     int       `json:"version"         example:"2"`
+	ServiceName string    `json:"service_name"    example:"Yandex Plus"`
+	Price       int       `json:"price"           example:"400"`
+	UserID      uuid.UUID `json:"user_id"         example:"60601ef-ddrsa-ggg34464"`
+	StartDate   string    `json:"start_date"      example:"07-2026"`
+	FinishDate  *string   `json:"finish_date"     example:"08-2026"`
 }
 
 func subscriptionDtoFromDomain(subscription domain.Subscription, startDate string, finishDate *string) SubscriptionResponseDTO {

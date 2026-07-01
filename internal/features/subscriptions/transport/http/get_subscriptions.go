@@ -11,6 +11,17 @@ import (
 
 type GetSubscriptionsResponse []SubscriptionResponseDTO
 
+// GetSubscriptions godoc
+// @Summary Получить список подписок
+// @Description Просмотр списка подписок
+// @Tags subscriptions
+// @Produce json
+// @Param limit query int false "Размер страницы с подписками"
+// @Param offset query int false "Смещение страницы с подписками"
+// @Success 200 {object} GetSubscriptionsResponse "Список пользователей успешно получен"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /subscription/ [get]
 func (h *SubscribtionsHTTPHandler) GetSubscriptions(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

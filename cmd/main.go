@@ -16,12 +16,19 @@ import (
 	subscriptions_service "github.com/Vlad-6894/test_task/internal/features/subscriptions/service"
 	subscriptions_transport_http "github.com/Vlad-6894/test_task/internal/features/subscriptions/transport/http"
 	"go.uber.org/zap"
+
+	_ "github.com/Vlad-6894/test_task/docs"
 )
 
 var (
 	timeZone = time.UTC
 )
 
+// @title Test task API
+// @version 1.0
+// @description API scheme
+// @host 127.0.0.1:5050
+// @BasePath /api/v1
 func main() {
 	time.Local = timeZone
 
@@ -54,6 +61,7 @@ func main() {
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigHTTPServerMust(),
 		logger,
+		core_http_middleware.CORS(),
 		core_http_middleware.RequestID(),
 		core_http_middleware.Logger(logger),
 		core_http_middleware.Trace(),
@@ -63,6 +71,8 @@ func main() {
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisteRoutes(subscriptionTransportHTTP.Routes()...)
 	httpServer.RegisterAPIRouters(apiVersionRouter)
+
+	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error:", zap.Error(err))

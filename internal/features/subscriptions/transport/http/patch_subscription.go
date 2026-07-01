@@ -14,9 +14,9 @@ import (
 )
 
 type PatchSubscriptionRequest struct {
-	Price      core_http_types.Nullable[int]    `json:"price"`
-	StartDate  core_http_types.Nullable[string] `json:"start_date"`
-	FinishDate core_http_types.Nullable[string] `json:"finish_date"`
+	Price      core_http_types.Nullable[int]    `json:"price"          swaggertype:"int" example:"400"`
+	StartDate  core_http_types.Nullable[string] `json:"start_date"     swaggertype:"string" example:"07-2026"`
+	FinishDate core_http_types.Nullable[string] `json:"finish_date"    swaggertype:"string" example:"08-2026"`
 }
 
 type PatchSubscriptionResponse SubscriptionResponseDTO
@@ -37,6 +37,20 @@ func (r *PatchSubscriptionRequest) Validate() error {
 	return nil
 }
 
+// PatchSubscription godoc
+// @Summary Изменить подписку
+// @Description Изменить информацию об уже существующей подписке
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param id path int true "ID изменяемой подписки"
+// @Param request body PatchSubscriptionRequest true  "PatchSubscription тело запроса"
+// @Success 200 {object} PatchSubscriptionResponse "Успешно изменённая подписка"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 404 {object} core_http_response.ErrorResponse "Not found"
+// @Failure 409 {object} core_http_response.ErrorResponse "Conflict"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /subscription/{id} [patch]
 func (h *SubscribtionsHTTPHandler) PatchSubscription(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

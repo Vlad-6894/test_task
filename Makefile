@@ -76,3 +76,11 @@ undeploy-golang-app:
 
 ps:
 	@docker compose ps
+
+swagger-gen:
+	@docker compose run --rm swagger \
+		init \
+		-g cmd/main.go \
+		-o docs \
+		--parseInternal \
+		--parseDependency

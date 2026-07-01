@@ -12,15 +12,26 @@ import (
 )
 
 type CreateSubscriptionRequestDTO struct {
-	ServiceName string    `json:"service_name" validate:"required"`
-	Price       int       `json:"price" validate:"required"`
-	UserID      uuid.UUID `json:"user_id" validate:"required"`
-	StartDate   string    `json:"start_date" validate:"required"`
-	FinishDate  *string   `json:"finish_date"`
+	ServiceName string    `json:"service_name" validate:"required"      example:"Yandex Plus"`
+	Price       int       `json:"price" validate:"required"             example:"400"`
+	UserID      uuid.UUID `json:"user_id" validate:"required"           example:"60601ef-ddrsa-ggg34464"`
+	StartDate   string    `json:"start_date" validate:"required"        example:"07-2026"`
+	FinishDate  *string   `json:"finish_date"                           example:"08-2026"`
 }
 
 type CreateSubscriptionResponseDTO SubscriptionResponseDTO
 
+// Create godoc
+// @Summary Создать подписку
+// @Description Создать новую подписку в системе
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param request body CreateSubscriptionRequestDTO true "CreateSubscriptionRequestDTO тело запроса"
+// @Success 201 {object} CreateSubscriptionResponseDTO "Успешно созданная подписка"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /subscription [post]
 func (h *SubscribtionsHTTPHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

@@ -1,0 +1,340 @@
+basePath: /api/v1
+definitions:
+  github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse:
+    properties:
+      error:
+        example: full_error_text
+        type: string
+      message:
+        example: error_message
+        type: string
+    type: object
+  internal_features_subscriptions_transport_http.CreateSubscriptionRequestDTO:
+    properties:
+      finish_date:
+        example: 08-2026
+        type: string
+      price:
+        example: 400
+        type: integer
+      service_name:
+        example: Yandex Plus
+        type: string
+      start_date:
+        example: 07-2026
+        type: string
+      user_id:
+        example: 60601ef-ddrsa-ggg34464
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  internal_features_subscriptions_transport_http.CreateSubscriptionResponseDTO:
+    properties:
+      finish_date:
+        example: 08-2026
+        type: string
+      id:
+        example: 1
+        type: integer
+      price:
+        example: 400
+        type: integer
+      service_name:
+        example: Yandex Plus
+        type: string
+      start_date:
+        example: 07-2026
+        type: string
+      user_id:
+        example: 60601ef-ddrsa-ggg34464
+        type: string
+      version:
+        example: 2
+        type: integer
+    type: object
+  internal_features_subscriptions_transport_http.GetSubscriptionResponse:
+    properties:
+      finish_date:
+        example: 08-2026
+        type: string
+      id:
+        example: 1
+        type: integer
+      price:
+        example: 400
+        type: integer
+      service_name:
+        example: Yandex Plus
+        type: string
+      start_date:
+        example: 07-2026
+        type: string
+      user_id:
+        example: 60601ef-ddrsa-ggg34464
+        type: string
+      version:
+        example: 2
+        type: integer
+    type: object
+  internal_features_subscriptions_transport_http.PatchSubscriptionRequest:
+    type: object
+  internal_features_subscriptions_transport_http.PatchSubscriptionResponse:
+    properties:
+      finish_date:
+        example: 08-2026
+        type: string
+      id:
+        example: 1
+        type: integer
+      price:
+        example: 400
+        type: integer
+      service_name:
+        example: Yandex Plus
+        type: string
+      start_date:
+        example: 07-2026
+        type: string
+      user_id:
+        example: 60601ef-ddrsa-ggg34464
+        type: string
+      version:
+        example: 2
+        type: integer
+    type: object
+  internal_features_subscriptions_transport_http.SubscriptionResponseDTO:
+    properties:
+      finish_date:
+        example: 08-2026
+        type: string
+      id:
+        example: 1
+        type: integer
+      price:
+        example: 400
+        type: integer
+      service_name:
+        example: Yandex Plus
+        type: string
+      start_date:
+        example: 07-2026
+        type: string
+      user_id:
+        example: 60601ef-ddrsa-ggg34464
+        type: string
+      version:
+        example: 2
+        type: integer
+    type: object
+host: 127.0.0.1:5050
+info:
+  contact: {}
+  description: API scheme
+  title: Test task API
+  version: "1.0"
+paths:
+  /subscription:
+    post:
+      consumes:
+      - application/json
+      description: Создать новую подписку в системе
+      parameters:
+      - description: CreateSubscriptionRequestDTO тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_subscriptions_transport_http.CreateSubscriptionRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешно созданная подписка
+          schema:
+            $ref: '#/definitions/internal_features_subscriptions_transport_http.CreateSubscriptionResponseDTO'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+      summary: Создать подписку
+      tags:
+      - subscriptions
+  /subscription/:
+    get:
+      description: Просмотр списка подписок
+      parameters:
+      - description: Размер страницы с подписками
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение страницы с подписками
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список пользователей успешно получен
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_subscriptions_transport_http.SubscriptionResponseDTO'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+      summary: Получить список подписок
+      tags:
+      - subscriptions
+  /subscription/{id}:
+    delete:
+      description: Удалить подписку по её id
+      parameters:
+      - description: ID подписки, которая удаляется
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Успешное удаление подписки
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+      summary: Удалить подписку
+      tags:
+      - subscriptions
+    get:
+      description: получить подписку в системе по её id
+      parameters:
+      - description: ID подписки которую мы хотим получить
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь успешно найден
+          schema:
+            $ref: '#/definitions/internal_features_subscriptions_transport_http.GetSubscriptionResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+      summary: Получить подписку
+      tags:
+      - subscriptions
+    patch:
+      consumes:
+      - application/json
+      description: Изменить информацию об уже существующей подписке
+      parameters:
+      - description: ID изменяемой подписки
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: PatchSubscription тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_subscriptions_transport_http.PatchSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешно изменённая подписка
+          schema:
+            $ref: '#/definitions/internal_features_subscriptions_transport_http.PatchSubscriptionResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+      summary: Изменить подписку
+      tags:
+      - subscriptions
+  /subscription/{user_id}:
+    get:
+      description: Получить сумму подписок у пользователя за конкретный период
+      parameters:
+      - description: Id пользователя в формате UUID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: С какого месяца начать счёт
+        in: query
+        name: from_date
+        type: integer
+      - description: На каком месяце закончить счёт
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сумма подписок успешно получена
+          schema:
+            type: integer
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Vlad-6894_test_task_internal_core_transport_http_response.ErrorResponse'
+      summary: Получить сумму подписок у пользователя
+      tags:
+      - subscriptions
+swagger: "2.0"

@@ -8,6 +8,16 @@ import (
 	core_http_utils "github.com/Vlad-6894/test_task/internal/core/transport/http/utils"
 )
 
+// DeleteSubscription godoc
+// @Summary Удалить подписку
+// @Description Удалить подписку по её id
+// @Tags subscriptions
+// @Param id path int true "ID подписки, которая удаляется"
+// @Success 204  "Успешное удаление подписки"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 404 {object} core_http_response.ErrorResponse "Not found"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /subscription/{id} [delete]
 func (h *SubscribtionsHTTPHandler) DeleteSubscription(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

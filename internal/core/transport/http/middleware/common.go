@@ -11,8 +11,37 @@ import (
 )
 
 const (
-	requestIDKey = "X-Request-ID"
+	requestIDKey  = "X-Request-ID"
+	originKey     = "Origin"
+	AccesOrigin   = "Access-Control-Allow-Origin"
+	AccessMethods = "Access-Control-Allow-Methods"
+	AccessHeaders = "Access-Control-Allow-Headers"
 )
+
+func CORS() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			allowedOrigins := map[string]struct{}{
+				"http://localhost:5050": {},
+			}
+
+			origin := r.Header.Get(originKey)
+
+			if _, ok := allowedOrigins[origin]; ok {
+				w.Header().Set(AccesOrigin, origin)
+				w.Header().Set(AccessMethods, "GET, POST, PATCH, DELETE, OPTIONS")
+				w.Header().Set(AccessHeaders, "Content-Type, Authorization")
+			}
+
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
 
 func RequestID() Middleware {
 	return func(next http.Handler) http.Handler {

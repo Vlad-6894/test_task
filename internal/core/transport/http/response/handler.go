@@ -80,12 +80,11 @@ func (h *HTTPResponseHandler) errorResponse(
 	err error,
 	message string,
 ) {
-	h.w.WriteHeader(statusCode)
-
-	response := map[string]string{
-		"message": message,
-		"error":   err.Error(),
+	response := ErrorResponse{
+		Error:   err.Error(),
+		Message: message,
 	}
+	h.w.WriteHeader(statusCode)
 
 	h.ToJSONRsponse(response, statusCode)
 }
