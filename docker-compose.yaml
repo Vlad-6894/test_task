@@ -3,7 +3,7 @@ services:
   test-task-golang-app:
     build:
       context: ${PROJECT_ROOT}
-      dockerfile: ${PROJECT_ROOT}/cmd/Dockerfile
+      dockerfile: ${PROJECT_ROOT}/Dockerfile
     container_name: application-golang
     environment:
       - HTTP_ADDR=:5050

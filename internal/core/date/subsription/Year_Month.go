@@ -22,6 +22,9 @@ func ParseStartDateFromJson(date string) (YearMonth, error) {
 }
 
 func ParseFinishDateFromJson(date *string) (*YearMonth, error) {
+	if date == nil {
+		return nil, nil
+	}
 	yearMonth, err := parseDateFromJson(*date)
 	if err != nil {
 		return nil, fmt.Errorf("Error parce start date! %w", err)
@@ -72,6 +75,9 @@ func GetStartDateFromModel(date time.Time) YearMonth {
 }
 
 func GetFinishDateFromModel(date *time.Time) *YearMonth {
+	if date == nil {
+		return nil
+	}
 	year := date.Year()
 	yearMonht := date.Month()
 
@@ -87,11 +93,23 @@ func ParseDateStartToString(yearMonth YearMonth) string {
 }
 
 func ParseDateFinishToString(yearMonth *YearMonth) *string {
-	date := fmt.Sprintf("%02d-%d", int(yearMonth.Month), yearMonth.Year)
+	if yearMonth == nil {
+		return nil
+	}
+	dateWr := *yearMonth
+	date := fmt.Sprintf("%02d-%d", int(dateWr.Month), dateWr.Year)
 	return &date
 }
 
 func GetDateForRepository(date YearMonth) time.Time {
 	dateRep := time.Date(date.Year, date.Month, 1, 0, 0, 0, 0, time.UTC)
 	return dateRep
+}
+
+func GetDateFinishForRepository(date *YearMonth) *time.Time {
+	if date == nil {
+		return nil
+	}
+	dateRep := time.Date(date.Year, date.Month, 1, 0, 0, 0, 0, time.UTC)
+	return &dateRep
 }

@@ -9,5 +9,5 @@ CREATE TABLE test.subscriptions (
     start_date DATE NOT NULL,
     finish_date DATE,
 
-    CHECK(finish_date>start_date)
+    CHECK(finish_date IS NOT NULL AND finish_date>start_date OR finish_date IS NULL)
 );

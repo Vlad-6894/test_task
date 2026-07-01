@@ -57,6 +57,9 @@ func NewSubscription(
 }
 
 func (s Subscription) Validate() error {
+	if s.DateFinish == nil {
+		return nil
+	}
 	dateFinishWithoutPtr := *s.DateFinish
 	if s.DateStart.Year > dateFinishWithoutPtr.Year {
 		return fmt.Errorf("Year date_start is later than year date_finish! %w", core_errors.ErrInvalidArgument)
@@ -74,7 +77,7 @@ type SubscriptionPatch struct {
 	FinishDate Nullable[string]
 }
 
-func (p *SubscriptionPatch) Validate() error {
+func (p *SubscriptionPatch) ValidatePatch() error {
 	if p.Price.Set && p.Price.Value == nil {
 		return fmt.Errorf("Price can not be patched to NULL: %w", core_errors.ErrInvalidArgument)
 	}
@@ -86,7 +89,7 @@ func (p *SubscriptionPatch) Validate() error {
 }
 
 func (s *Subscription) ApplyPatch(patch SubscriptionPatch) error {
-	if err := patch.Validate(); err != nil {
+	if err := patch.ValidatePatch(); err != nil {
 		return fmt.Errorf("validate patch error: %w", err)
 	}
 

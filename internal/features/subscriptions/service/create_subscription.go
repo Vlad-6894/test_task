@@ -11,6 +11,7 @@ func (s *SubscriptionService) CreateSubscription(
 	ctx context.Context,
 	subscription domain.Subscription,
 ) (domain.Subscription, error) {
+	fmt.Println("Service start!")
 	if err := subscription.Validate(); err != nil {
 		return domain.Subscription{}, fmt.Errorf("Error validate subscription: %w", err)
 	}

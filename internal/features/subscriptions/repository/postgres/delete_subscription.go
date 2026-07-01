@@ -16,7 +16,7 @@ func (r *SubscriptionRepository) DeleteSubscription(
 
 	sqlRequest := `
 	DELETE FROM test.subscriptions
-	WHERE id = $1:
+	WHERE id = $1;
 	`
 
 	cmndTag, err := r.pool.Exec(ctxWithTime, sqlRequest, id)

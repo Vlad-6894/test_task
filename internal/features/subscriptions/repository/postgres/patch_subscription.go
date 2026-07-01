@@ -30,12 +30,15 @@ func (r *SubscriptionRepository) PatchSubscription(
 	RETURNING id, version, service_name, price, user_id, start_date, finish_date;
 	`
 
+	dateStartToDB := core_subcription_date.GetDateForRepository(subscription.DateStart)
+	dateFinishToDB := core_subcription_date.GetDateFinishForRepository(subscription.DateFinish)
+
 	row := r.pool.QueryRow(
 		ctxWithTime,
 		sqlRequest,
 		subscription.Price,
-		subscription.DateStart,
-		subscription.DateFinish,
+		dateStartToDB,
+		dateFinishToDB,
 		id,
 		subscription.Version,
 	)

@@ -33,6 +33,15 @@ func NewSubscriptionsCreateRequestModel(
 	dateStart core_subcription_date.YearMonth,
 	dateFinish *core_subcription_date.YearMonth,
 ) SubscriptionsCreateRequestModel {
+	if dateFinish == nil {
+		return SubscriptionsCreateRequestModel{
+			ServiceName: serviceName,
+			Price:       price,
+			UserID:      userID,
+			DateStart:   time.Date(dateStart.Year, dateStart.Month, 1, 0, 0, 0, 0, time.UTC),
+			DateFinish:  nil,
+		}
+	}
 	finishDate := time.Date(dateFinish.Year, dateFinish.Month, 1, 0, 0, 0, 0, time.UTC)
 	return SubscriptionsCreateRequestModel{
 		ServiceName: serviceName,
