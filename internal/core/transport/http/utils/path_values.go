@@ -6,12 +6,13 @@ import (
 	"strconv"
 
 	core_errors "github.com/Vlad-6894/test_task/internal/core/errors"
+	"github.com/google/uuid"
 )
 
 func GetIntPathValue(r *http.Request, key string) (int, error) {
 	pathValue := r.PathValue(key)
 	if pathValue == "" {
-		return 0, fmt.Errorf("no key=%s in path values: %w", core_errors.ErrInvalidArgument)
+		return 0, fmt.Errorf("no key=%s in path values: %w", key, core_errors.ErrInvalidArgument)
 	}
 
 	val, err := strconv.Atoi(pathValue)
@@ -26,4 +27,18 @@ func GetIntPathValue(r *http.Request, key string) (int, error) {
 	}
 
 	return val, nil
+}
+
+func GetUUIDPathValue(r *http.Request, key string) (*uuid.UUID, error) {
+	pathValue := r.PathValue(key)
+	if pathValue == "" {
+		return nil, fmt.Errorf("no key=%s in path values: %w", key, core_errors.ErrInvalidArgument)
+	}
+
+	uuid, err := uuid.Parse(pathValue)
+	if err != nil {
+
+	}
+
+	return &uuid, nil
 }

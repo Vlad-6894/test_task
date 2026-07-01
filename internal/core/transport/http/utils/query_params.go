@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	core_subcription_date "github.com/Vlad-6894/test_task/internal/core/date/subsription"
 	core_errors "github.com/Vlad-6894/test_task/internal/core/errors"
 )
 
@@ -26,4 +27,18 @@ func GetIntQueryParam(r *http.Request, key string) (*int, error) {
 	}
 
 	return &val, nil
+}
+
+func GetDateQueryParam(r *http.Request, key string) (*core_subcription_date.YearMonth, error) {
+	param := r.URL.Query().Get(key)
+	if param == "" {
+		return nil, nil
+	}
+
+	date, err := core_subcription_date.ParseFinishDateFromJson(&param)
+	if err != nil {
+		return nil, fmt.Errorf("fail to parse date: %w", core_errors.ErrInvalidArgument)
+	}
+
+	return date, nil
 }

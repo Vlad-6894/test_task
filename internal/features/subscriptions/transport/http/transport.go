@@ -4,8 +4,10 @@ import (
 	"context"
 	"net/http"
 
+	core_subcription_date "github.com/Vlad-6894/test_task/internal/core/date/subsription"
 	"github.com/Vlad-6894/test_task/internal/core/domain"
 	core_http_server "github.com/Vlad-6894/test_task/internal/core/transport/http/server"
+	"github.com/google/uuid"
 )
 
 type SubscribtionsHTTPHandler struct {
@@ -38,6 +40,13 @@ type SubscriptionsService interface {
 		id int,
 		patch domain.SubscriptionPatch,
 	) (domain.Subscription, error)
+
+	GetSubscriptionsSum(
+		ctx context.Context,
+		user_id *uuid.UUID,
+		fromDate *core_subcription_date.YearMonth,
+		toDate *core_subcription_date.YearMonth,
+	) (int, error)
 }
 
 func NewSubscriptionsHTTPHandler(subscriptionService SubscriptionsService) *SubscribtionsHTTPHandler {
@@ -65,13 +74,18 @@ func (h *SubscribtionsHTTPHandler) Routes() []core_http_server.Route {
 		},
 		{
 			Method:  http.MethodDelete,
-			Path:    "/subscriptions/{id}",
+			Path:    "/subscription/{id}",
 			Handler: h.DeleteSubscription,
 		},
 		{
 			Method:  http.MethodPatch,
-			Path:    "/subscriptions/{id}",
+			Path:    "/subscription/{id}",
 			Handler: h.PatchSubscription,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/subscription/sum/{user_id}",
+			Handler: h.GetSubscriptionsSum,
 		},
 	}
 }

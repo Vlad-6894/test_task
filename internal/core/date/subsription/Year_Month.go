@@ -90,3 +90,8 @@ func ParseDateFinishToString(yearMonth *YearMonth) *string {
 	date := fmt.Sprintf("%02d-%d", int(yearMonth.Month), yearMonth.Year)
 	return &date
 }
+
+func GetDateForRepository(date YearMonth) time.Time {
+	dateRep := time.Date(date.Year, date.Month, 1, 0, 0, 0, 0, time.UTC)
+	return dateRep
+}
